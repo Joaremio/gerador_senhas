@@ -46,16 +46,25 @@ DIGITS="0123456789"
 SYMBOLS="!@#$%^&*()-_=+[]{}|;:,.<>?/~"
 
 # Construir a lista de caracteres permitidos
-# { Implementação vem aqui }
+CHAR_SET=$LOWERCASE
+if $USE_UPPERCASE; then
+  CHAR_SET+=$UPPERCASE
+fi
+if $USE_DIGITS; then
+  CHAR_SET+=$DIGITS
+fi
+if $USE_SYMBOLS; then
+  CHAR_SET+=$SYMBOLS
+fi
 
 # Gerar a senha:
 # o /dev/urandom gera bytes aleatórios, para conseguir
 # uma senha precisamos limpar esses bytes de alguma forma
-PASSWORD=$(cat /dev/urandom)
+PASSWORD=$(cat /dev/urandom | tr -dc "$CHAR_SET" | head -c $LENGTH)
 
 # Exibir a senha gerada
 echo "Senha gerada: $PASSWORD"
 
 # Opcional: salvar a senha em um arquivo criptografado
 # Implemente como essa senha será criptografada com o openssl
-echo $PASSWORD >> password.txt.enc
+# echo $PASSWORD >> password.txt.enc
