@@ -20,7 +20,24 @@ USE_DIGITS=false
 USE_SYMBOLS=false
 
 # Parsear argumentos
-# { Implementação vai aqui }
+
+while getopts ":l:uds" opt; do
+  case ${opt} in
+    l) LENGTH=$OPTARG ;;
+    u) USE_UPPERCASE=true ;;
+    d) USE_DIGITS=true ;;
+    s) USE_SYMBOLS=true ;;
+    h) show_help
+       exit 0 ;;
+    \?) show_help
+        exit 1 ;;
+    :)
+      show_help
+      exit 1 ;;
+  esac
+done
+
+shift $((OPTIND -1))
 
 # Definir conjuntos de caracteres
 LOWERCASE="abcdefghijklmnopqrstuvwxyz"
