@@ -26,12 +26,16 @@ PASSWORD_NAME=""
 
 # Parsear argumentos
 
-while getopts ":l:uds" opt; do
+while getopts ":l:udso:n:ph" opt; do
   case ${opt} in
     l) LENGTH=$OPTARG ;;
     u) USE_UPPERCASE=true ;;
     d) USE_DIGITS=true ;;
     s) USE_SYMBOLS=true ;;
+    o) OUTPUT_FILE=$OPTARG ;;
+    n) PASSWORD_NAME=$OPTARG ;;
+    p) cat $OUTPUT_FILE
+       exit 0 ;;
     h) show_help
        exit 0 ;;
     \?) show_help
