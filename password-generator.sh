@@ -24,6 +24,7 @@ USE_SYMBOLS=false
 OUTPUT_FILE="passwords.txt"
 PASSWORD_NAME=""
 
+
 # Parsear argumentos
 
 while getopts ":l:udso:n:ph" opt; do
@@ -84,5 +85,10 @@ fi
 # Implemente como essa senha será criptografada com o openssl
 # echo $PASSWORD >> password.txt.enc
 
-echo "$PASSWORD" | openssl enc -aes-256-cbc -salt -pbkdf2 -iter 10000 -out "$PASSWORD_ARQ" -pass pass:$ENCRYPTION_PASSWORD
-echo "Senha criptografada salva em $PASSWORD_ARQ"
+if [ -n "$PASSWORD_NAME" ]; then
+  echo -n "$PASSWORD_NAME: $PASSWORD" | openssl enc -aes-256-cbc -salt -out "$OUTPUT_FILE.enc" -pass pass:password # Substitua "password" pela senha de criptografia desejada
+else
+  echo -n "$PASSWORD" | openssl enc -aes-256-cbc -salt -out "$OUTPUT_FILE.enc" -pass pass:password
+fi
+
+echo "Senha salva em $OUTPUT_FILE.enc (criptografado)"
