@@ -74,6 +74,15 @@ PASSWORD=$(cat /dev/urandom | tr -dc "$CHAR_SET" | head -c $LENGTH)
 # Exibir a senha gerada
 echo "Senha gerada: $PASSWORD"
 
+if [ -n "$PASSWORD_NAME" ]; then
+  echo "$PASSWORD_NAME: $PASSWORD" >> $OUTPUT_FILE
+else
+  echo "$PASSWORD" >> $OUTPUT_FILE
+fi
+
 # Opcional: salvar a senha em um arquivo criptografado
 # Implemente como essa senha será criptografada com o openssl
 # echo $PASSWORD >> password.txt.enc
+
+echo "$PASSWORD" | openssl enc -aes-256-cbc -salt -pbkdf2 -iter 10000 -out "$PASSWORD_ARQ" -pass pass:$ENCRYPTION_PASSWORD
+echo "Senha criptografada salva em $PASSWORD_ARQ"
