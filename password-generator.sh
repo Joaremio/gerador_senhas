@@ -1,7 +1,7 @@
 #!/bin/bash
 # Função para exibir a ajuda
 show_help(){
-  echo "Bem vindo ao password generator! Versão 2.0, (c) 2024, Cicrano, DIMAp, UFRN"
+  echo "Bem vindo ao password generator! Versão 2.0, (c) 2024, José Bernardo e Joaremio Neto, DIMAp, UFRN"
   echo "Uso: ./password-generator.sh [OPTIONS]"
   echo "Opções: "
   echo "  -l LENGTH  Especifica o tamanho da senha (padrão: 8)"
@@ -33,20 +33,9 @@ while getopts ":l:udso:n:ph" opt; do
     u) USE_UPPERCASE=true ;;
     d) USE_DIGITS=true ;;
     s) USE_SYMBOLS=true ;;
-    o)
-       # Se -o é seguido por outro argumento, esse argumento é o nome do arquivo
-       if [[ ! -z "${!OPTIND}" && ${!OPTIND:0:1} != "-" ]]; then
-         OUTPUT_FILE=${!OPTIND}
-         OPTIND=$(( $OPTIND + 1 ))
-       fi
-       ;;
+    o) OUTPUT_FILE="${!OPTIND}"; OPTIND=$(( $OPTIND + 1 )) ;;  # Lê o próximo argumento como o nome do arquivo
     n) PASSWORD_NAME=$OPTARG ;;
-    p)
-       if [ -f "$OUTPUT_FILE" ]; then
-         cat "$OUTPUT_FILE"
-       else
-         echo "Arquivo $OUTPUT_FILE não encontrado."
-       fi
+    p) cat "$OUTPUT_FILE"
        exit 0 ;;
     h) show_help
        exit 0 ;;
@@ -79,8 +68,6 @@ if $USE_SYMBOLS; then
 fi
 
 # Gerar a senha:
-# o /dev/urandom gera bytes aleatórios, para conseguir
-# uma senha precisamos limpar esses bytes de alguma forma
 PASSWORD=$(cat /dev/urandom | tr -dc "$CHAR_SET" | head -c $LENGTH)
 
 # Exibir a senha gerada
@@ -94,13 +81,9 @@ fi
 
 # Opcional: salvar a senha em um arquivo criptografado
 # Implemente como essa senha será criptografada com o openssl
-# echo $PASSWORD >> password.txt.enc
-
-if [ -n "$OUTPUT_FILE" ]; then
-  if [ -n "$PASSWORD_NAME" ]; then
-    echo -n "$PASSWORD_NAME: $PASSWORD" | openssl enc -aes-256-cbc -salt -pbkdf2 -iter 100000 -out "$OUTPUT_FILE" -pass pass:password
-  else
-    echo -n "$PASSWORD" | openssl enc -aes-256-cbc -salt -pbkdf2 -iter 100000 -out "$OUTPUT_FILE" -pass pass:password
-  fi
-  echo "Senha salva em $OUTPUT_FILE (criptografado)"
+if [ -n "$PASSWORD_NAME" ]; then
+  echo -n "$PASSWORD_NAME: $PASSWORD" | openssl enc -aes-256-cbc -salt -pbkdf2 -iter 100000 -out "$OUTPUT_FILE.enc" -pass pass:password
+else
+  echo -n "$PASSWORD" | openssl enc -aes-256-cbc -salt -pbkdf2 -iter 100000 -out "$OUTPUT_FILE.enc" -pass pass:password
 fi
+
