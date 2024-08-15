@@ -33,9 +33,20 @@ while getopts ":l:udso:n:ph" opt; do
     u) USE_UPPERCASE=true ;;
     d) USE_DIGITS=true ;;
     s) USE_SYMBOLS=true ;;
-    o) OUTPUT_FILE=$OPTARG ;;
+    o)
+       # Se -o é seguido por outro argumento, esse argumento é o nome do arquivo
+       if [[ ! -z "${!OPTIND}" && ${!OPTIND:0:1} != "-" ]]; then
+         OUTPUT_FILE=${!OPTIND}
+         OPTIND=$(( $OPTIND + 1 ))
+       fi
+       ;;
     n) PASSWORD_NAME=$OPTARG ;;
-    p) cat $OUTPUT_FILE
+    p)
+       if [ -f "$OUTPUT_FILE" ]; then
+         cat "$OUTPUT_FILE"
+       else
+         echo "Arquivo $OUTPUT_FILE não encontrado."
+       fi
        exit 0 ;;
     h) show_help
        exit 0 ;;
@@ -43,7 +54,7 @@ while getopts ":l:udso:n:ph" opt; do
         exit 1 ;;
     :)
       show_help
-      exit 1 ;;
+        exit 1 ;;
   esac
 done
 
@@ -85,10 +96,11 @@ fi
 # Implemente como essa senha será criptografada com o openssl
 # echo $PASSWORD >> password.txt.enc
 
-if [ -n "$PASSWORD_NAME" ]; then
-  echo -n "$PASSWORD_NAME: $PASSWORD" | openssl enc -aes-256-cbc -salt -out "$OUTPUT_FILE.enc" -pass pass:password # Substitua "password" pela senha de criptografia desejada
-else
-  echo -n "$PASSWORD" | openssl enc -aes-256-cbc -salt -out "$OUTPUT_FILE.enc" -pass pass:password
+if [ -n "$OUTPUT_FILE" ]; then
+  if [ -n "$PASSWORD_NAME" ]; then
+    echo -n "$PASSWORD_NAME: $PASSWORD" | openssl enc -aes-256-cbc -salt -pbkdf2 -iter 100000 -out "$OUTPUT_FILE" -pass pass:password
+  else
+    echo -n "$PASSWORD" | openssl enc -aes-256-cbc -salt -pbkdf2 -iter 100000 -out "$OUTPUT_FILE" -pass pass:password
+  fi
+  echo "Senha salva em $OUTPUT_FILE (criptografado)"
 fi
-
-echo "Senha salva em $OUTPUT_FILE.enc (criptografado)"
