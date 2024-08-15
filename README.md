@@ -20,7 +20,7 @@ Para gerar uma senha simples de 8 caracteres minúsculos:
 
 ```bash
 ./password-generator.sh
-\```
+```
 
 ### Visualização de Todas as Opções
 
@@ -28,4 +28,4 @@ Para visualizar todas as opções disponíveis no script, incluindo como persona
 
 ```bash
 ./password-generator.sh -h
-\```
+```
