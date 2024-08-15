@@ -21,6 +21,8 @@ LENGTH=8
 USE_UPPERCASE=false
 USE_DIGITS=false
 USE_SYMBOLS=false
+OUTPUT_FILE="passwords.txt"
+PASSWORD_NAME=""
 
 # Parsear argumentos
 
